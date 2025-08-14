@@ -1,0 +1,53 @@
+# .NET
+API/bin/
+API/obj/
+API/out/
+API/wwwroot/
+API/*.db
+API/*.db-shm
+API/*.db-wal
+API/appsettings.Development.json
+API/Properties/launchSettings.json
+
+# React/Node.js
+UI/node_modules/
+UI/dist/
+UI/build/
+UI/.env.local
+UI/.env.development.local
+UI/.env.test.local
+UI/.env.production.local
+UI/npm-debug.log*
+UI/yarn-debug.log*
+UI/yarn-error.log*
+
+# IDE
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

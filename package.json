@@ -1,0 +1,29 @@
+{
+  "name": "buynow-ecommerce",
+  "version": "1.0.0",
+  "description": "Complete Amazon/Flipkart-style e-commerce application",
+  "scripts": {
+    "install:ui": "cd UI && npm install",
+    "install:api": "cd API && dotnet restore",
+    "install:all": "npm run install:api && npm run install:ui",
+    "dev:api": "cd API && dotnet run",
+    "dev:ui": "cd UI && npm run dev",
+    "build:ui": "cd UI && npm run build",
+    "build:api": "cd API && dotnet publish -c Release",
+    "build:all": "npm run build:api && npm run build:ui"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "dotnet",
+    "typescript",
+    "paypal",
+    "sqlite"
+  ],
+  "author": "BuyNow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/buynow-ecommerce.git"
+  }
+}
