@@ -110,7 +110,7 @@ function App() {
                 <Route
                   path="/admin/dashboard"
                   element={
-                    <ProtectedRoute requiredPermissions={[PERMISSIONS.VIEW_DASHBOARD]}>
+                    <ProtectedRoute requiredRoles={['Admin', 'admin']}>
                       <DashboardLayout>
                         <Dashboard />
                       </DashboardLayout>
@@ -120,7 +120,7 @@ function App() {
                 <Route
                   path="/admin/products"
                   element={
-                    <ProtectedRoute requiredPermissions={[PERMISSIONS.VIEW_PRODUCTS]}>
+                    <ProtectedRoute requiredRoles={['Admin', 'admin']}>
                       <DashboardLayout>
                         <Products />
                       </DashboardLayout>

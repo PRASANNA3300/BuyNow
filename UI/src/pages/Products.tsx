@@ -11,15 +11,22 @@ import { ProductForm } from '../components/products/ProductForm';
 import { Product } from '../types/product';
 
 export function Products() {
-  const { hasPermission } = useAuth();
+  const { user, hasPermission } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const { data: products, isLoading, error } = useProducts();
+  // Admin users have all permissions
+  const isAdmin = user?.role === 'Admin' || user?.role === 'admin';
+  const canCreate = isAdmin || hasPermission(PERMISSIONS.CREATE_PRODUCTS);
+  const canUpdate = isAdmin || hasPermission(PERMISSIONS.UPDATE_PRODUCTS);
+  const canDelete = isAdmin || hasPermission(PERMISSIONS.DELETE_PRODUCTS);
+
+  const { data: productsResponse, isLoading, error } = useProducts();
   const deleteProductMutation = useDeleteProduct();
 
-  const filteredProducts = products?.filter(product =>
+  const products = productsResponse?.products || [];
+  const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -33,9 +40,18 @@ export function Products() {
     if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
       try {
         await deleteProductMutation.mutateAsync(product.id);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to delete product:', error);
-        alert('Failed to delete product. Please try again.');
+
+        // Provide more specific error messages
+        if (error?.response?.status === 404) {
+          alert('Product not found. It may have already been deleted.');
+        } else if (error?.response?.status === 400) {
+          const message = error?.response?.data?.message || 'Cannot delete this product.';
+          alert(message);
+        } else {
+          alert('Failed to delete product. Please try again.');
+        }
       }
     }
   };
@@ -73,7 +89,7 @@ export function Products() {
             Create, edit, and manage your product catalog
           </p>
         </div>
-        {hasPermission(PERMISSIONS.CREATE_PRODUCTS) && (
+        {canCreate && (
           <Button
             onClick={() => setIsModalOpen(true)}
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
@@ -100,14 +116,14 @@ export function Products() {
             </div>
           </div>
           <div className="text-sm text-gray-600 flex items-center">
-            {filteredProducts?.length || 0} products found
+            {filteredProducts.length} products found
           </div>
         </div>
       </div>
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts?.map((product) => (
+        {filteredProducts.map((product) => (
           <div key={product.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             {product.imageUrl ? (
               <div className="relative overflow-hidden">
@@ -177,7 +193,7 @@ export function Products() {
               </div>
               
               <div className="flex space-x-2">
-                {hasPermission(PERMISSIONS.UPDATE_PRODUCTS) && (
+                {canUpdate && (
                   <Button
                     variant="secondary"
                     size="sm"
@@ -189,7 +205,7 @@ export function Products() {
                   </Button>
                 )}
 
-                {hasPermission(PERMISSIONS.DELETE_PRODUCTS) && (
+                {canDelete && (
                   <Button
                     variant="danger"
                     size="sm"
@@ -206,7 +222,7 @@ export function Products() {
         ))}
       </div>
 
-      {filteredProducts?.length === 0 && (
+      {filteredProducts.length === 0 && (
         <div className="text-center py-16">
           <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <Package className="h-12 w-12 text-gray-400" />
@@ -215,7 +231,7 @@ export function Products() {
           <p className="text-gray-600 mb-8 max-w-md mx-auto">
             {searchTerm ? 'Try adjusting your search terms or browse all products.' : 'Get started by creating your first product to begin managing your inventory.'}
           </p>
-          {hasPermission(PERMISSIONS.CREATE_PRODUCTS) && !searchTerm && (
+          {canCreate && !searchTerm && (
             <Button
               onClick={() => setIsModalOpen(true)}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"

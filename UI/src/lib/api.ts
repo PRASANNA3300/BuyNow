@@ -31,8 +31,18 @@ class ApiClient {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({ message: 'An error occurred' }));
+      const error = new Error(errorData.message || `HTTP error! status: ${response.status}`) as any;
+      error.response = {
+        status: response.status,
+        data: errorData
+      };
+      throw error;
+    }
+
+    // Handle void responses (like DELETE)
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return undefined as T;
     }
 
     return response.json();

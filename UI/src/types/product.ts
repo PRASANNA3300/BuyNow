@@ -35,7 +35,6 @@ export interface CreateProductData {
 }
 
 export interface UpdateProductData extends Partial<CreateProductData> {
-  id: number;
 }
 
 export interface ProductFilters {

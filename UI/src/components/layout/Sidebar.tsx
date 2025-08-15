@@ -23,6 +23,9 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { user, logout, hasPermission } = useAuth();
   const location = useLocation();
 
+  // Admin users have access to all navigation items
+  const isAdmin = user?.role === 'Admin' || user?.role === 'admin';
+
   const navigation = [
     {
       name: 'Dashboard',
@@ -38,7 +41,9 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     },
   ];
 
-  const filteredNavigation = navigation.filter(item => hasPermission(item.permission));
+  const filteredNavigation = navigation.filter(item =>
+    isAdmin || hasPermission(item.permission)
+  );
 
   const handleLogout = () => {
     logout();

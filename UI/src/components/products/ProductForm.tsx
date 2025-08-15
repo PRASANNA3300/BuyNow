@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCreateProduct, useUpdateProduct } from '../../hooks/useProducts';
 import { useCategories } from '../../hooks/useCategories';
 import { useBrands } from '../../hooks/useBrands';
@@ -30,6 +30,26 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Update form data when product changes
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || '',
+        description: product.description || '',
+        price: product.price || 0,
+        categoryId: product.categoryId || 0,
+        brandId: product.brandId || 0,
+        brand: product.brand || '',
+        sku: product.sku || '',
+        stock: product.stock || 0,
+        imageUrl: product.imageUrl || '',
+        isActive: product.isActive ?? true,
+        isFeatured: product.isFeatured ?? false,
+        discountPrice: product.discountPrice || 0,
+      });
+    }
+  }, [product]);
 
   const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct();
@@ -98,7 +118,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
       };
 
       if (isEditing) {
-        await updateProductMutation.mutateAsync({ ...data, id: product.id });
+        await updateProductMutation.mutateAsync({ id: product.id, data });
       } else {
         await createProductMutation.mutateAsync(data);
       }

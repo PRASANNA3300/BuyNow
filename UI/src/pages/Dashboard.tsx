@@ -16,7 +16,9 @@ import { PERMISSIONS } from '../lib/permissions';
 
 export function Dashboard() {
   const { user, hasPermission } = useAuth();
-  const { data: products, isLoading: productsLoading } = useProducts();
+  const { data: productsResponse, isLoading: productsLoading } = useProducts();
+
+  const products = productsResponse?.products || [];
 
 
 
@@ -25,8 +27,7 @@ export function Dashboard() {
   // Always show admin panel for admin users, regardless of permissions
   if (user?.role === 'Admin' || user?.role === 'admin') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
+      <div className="space-y-8">
           {/* Welcome Section */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8">
             <div className="flex items-center justify-between">
@@ -56,7 +57,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Products</p>
-                  <p className="text-3xl font-bold text-gray-900">{products?.length || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{products.length}</p>
                 </div>
               </div>
             </div>
@@ -68,7 +69,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Active Products</p>
-                  <p className="text-3xl font-bold text-gray-900">{products?.filter(p => p.isActive).length || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{products.filter(p => p.isActive).length}</p>
                 </div>
               </div>
             </div>
@@ -80,7 +81,7 @@ export function Dashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
-                  <p className="text-3xl font-bold text-gray-900">{products?.filter(p => p.stock < 10).length || 0}</p>
+                  <p className="text-3xl font-bold text-gray-900">{products.filter(p => p.stock < 10).length}</p>
                 </div>
               </div>
             </div>
@@ -162,24 +163,19 @@ export function Dashboard() {
               )}
             </div>
           </div>
-        </div>
       </div>
     );
   }
 
   // Fallback for non-admin users
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8 text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Access Denied
-          </h1>
-          <p className="text-gray-600">
-            You don't have permission to access the admin dashboard.
-          </p>
-        </div>
-      </div>
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-8 text-center">
+      <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+        Access Denied
+      </h1>
+      <p className="text-gray-600">
+        You don't have permission to access the admin dashboard.
+      </p>
     </div>
   );
 }
